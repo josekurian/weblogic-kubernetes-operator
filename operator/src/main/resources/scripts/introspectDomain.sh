@@ -275,7 +275,8 @@ function createWLDomain() {
         if [ -f ${inventory_merged_model} ] && [ ${archive_zip_changed} -eq 0 ] ; then
 
 
-            ${SCRIPTPATH}/wlst.sh ${SCRIPTPATH}/model_diff.py ${inventory_merged_model} $DOMAIN_HOME/wlsdeploy/domain_model.json || exit 1
+            ${SCRIPTPATH}/wlst.sh ${SCRIPTPATH}/model_diff.py $DOMAIN_HOME/wlsdeploy/domain_model.json \
+                ${inventory_merged_model} || exit 1
             if [ $? -eq 0 ] ; then
                 trace "Using online update"
                 admin_user=$(cat /weblogic-operator/secrets/username)
