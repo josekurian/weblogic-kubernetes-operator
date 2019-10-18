@@ -3,6 +3,7 @@
 
 package oracle.kubernetes.operator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ import oracle.kubernetes.operator.utils.LoggerHelper;
 import oracle.kubernetes.operator.utils.Operator;
 import oracle.kubernetes.operator.utils.TestUtils;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -39,6 +41,7 @@ public class ItStickySession extends BaseTest {
 
   private static Operator operator;
   private static Domain domain;
+  private static String domainNS;
   private static String testClassName;
 
   /**
@@ -56,14 +59,31 @@ public class ItStickySession extends BaseTest {
       }.getClass().getEnclosingClass().getSimpleName();
       // initialize test properties and create the directories
       initialize(APP_PROPS_FILE, testClassName);
-
+      testClassName = "itsticksesn";
+      
       // Create operator1
       if (operator == null) {
         LoggerHelper.getLocal().log(Level.INFO,
             "Creating Operator & waiting for the script to complete execution");
-        operator = TestUtils.createOperator(OPERATOR1_YAML);
+        Map<String, Object> operatorMap = TestUtils.createOperatorMap(getNewSuffixCount(), true, testClassName);
+        //operator = TestUtils.createOperator(OPERATOR1_YAML);
+        operator = TestUtils.createOperator(operatorMap, Operator.RestCertType.SELF_SIGNED);
+        Assert.assertNotNull(operator);
+        domainNS = ((ArrayList<String>) operatorMap.get("domainNamespaces")).get(0);
       }
-
+      
+      // create domain
+      if (domain == null) {
+        LoggerHelper.getLocal().log(Level.INFO, "Creating WLS Domain & waiting for the script to complete execution");
+        Map<String, Object> domainMap = TestUtils.createDomainMap(getNewSuffixCount(), testClassName);
+        domainMap.put("namespace", domainNS);
+        // Treafik doesn't work due to the bug 28050300. Use Voyager instead
+        domainMap.put("loadBalancer", "VOYAGER");
+        domainMap.put("voyagerWebPort", new Integer("30355"));
+        domain = TestUtils.createDomain(domainMap);
+        domain.verifyDomainCreated();
+      }
+      /*
       // create domain
       if (domain == null) {
         LoggerHelper.getLocal().log(Level.INFO,
@@ -75,7 +95,7 @@ public class ItStickySession extends BaseTest {
         domain = TestUtils.createDomain(domainMap);
         domain.verifyDomainCreated();
       }
-
+*/
       httpHeaderFile = BaseTest.getResultDir() + "/headers";
 
       httpAttrMap = new HashMap<String, String>();
