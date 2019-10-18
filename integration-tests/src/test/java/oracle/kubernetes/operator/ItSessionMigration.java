@@ -58,6 +58,7 @@ public class ItSessionMigration extends BaseTest {
       // initialize test properties and create the directories
       initialize(APP_PROPS_FILE, testClassName);
       testClassName = "itsesnmigr";
+      
       // create operator1
       if (operator == null) {
         Map<String, Object> operatorMap =
@@ -94,7 +95,6 @@ public class ItSessionMigration extends BaseTest {
       // Wait some time for deployment gets ready
       Thread.sleep(10 * 1000);
     }
-
   }
 
   /**

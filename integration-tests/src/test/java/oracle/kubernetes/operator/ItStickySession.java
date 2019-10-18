@@ -83,19 +83,7 @@ public class ItStickySession extends BaseTest {
         domain = TestUtils.createDomain(domainMap);
         domain.verifyDomainCreated();
       }
-      /*
-      // create domain
-      if (domain == null) {
-        LoggerHelper.getLocal().log(Level.INFO,
-            "Creating WLS Domain & waiting for the script to complete execution");
-        Map<String, Object> domainMap = TestUtils.loadYaml(DOMAINONPV_WLST_YAML);
-        // Treafik doesn't work due to the bug 28050300. Use Voyager instead
-        domainMap.put("loadBalancer", "VOYAGER");
-        domainMap.put("voyagerWebPort", new Integer("30355"));
-        domain = TestUtils.createDomain(domainMap);
-        domain.verifyDomainCreated();
-      }
-*/
+
       httpHeaderFile = BaseTest.getResultDir() + "/headers";
 
       httpAttrMap = new HashMap<String, String>();
@@ -111,7 +99,6 @@ public class ItStickySession extends BaseTest {
       // Wait some time for deployment gets ready
       Thread.sleep(10 * 1000);
     }
-
   }
 
   /**
